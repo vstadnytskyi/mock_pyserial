@@ -12,7 +12,7 @@ from logging import debug,info,warn,error
 #as {'in command':'out command'}
 
 
-class Serial:
+class Serial(object):
 
     ## init(): the constructor.  Many of the arguments have default values
     # and can be skipped when calling the constructor.
@@ -53,7 +53,7 @@ class Serial:
     ## write()
     # writes a string of characters to the Arduino
     def write(self, string):
-        debug("input buffer got value: {}".format(string)
+        debug("input buffer got value: {}".format(string))
         self._in_buffer += string
 
     ## read()
