@@ -1,17 +1,24 @@
+"""
+Originally came from http://www.science.smith.edu/dftwiki/index.php/PySerial_Simulator
 # fakeSerial.py
 # D. Thiebaut
 # A very crude simulator for PySerial assuming it
 # is emulating an Arduino.
-#http://www.science.smith.edu/dftwiki/index.php/PySerial_Simulator
-
+"""
+from logging import debug,info,warn,error
 # a Serial class emulator
+
+#establishes responses to supported input commands
+#as {'in command':'out command'}
+
+
 class Serial:
 
     ## init(): the constructor.  Many of the arguments have default values
     # and can be skipped when calling the constructor.
-    def __init__( self, port='COM1', baudrate = 19200, timeout=1,
-                  bytesize = 8, parity = 'N', stopbits = 1, xonxoff=0,
-                  rtscts = 0):
+    def __init__(self, port='COM1', baudrate = 19200, timeout=1,
+                 bytesize = 8, parity = 'N', stopbits = 1, xonxoff=0,
+                 rtscts = 0):
         self.name     = port
         self.port     = port
         self.timeout  = timeout
@@ -22,49 +29,58 @@ class Serial:
         self.xonxoff  = xonxoff
         self.rtscts   = rtscts
         self._isOpen  = True
-        self._receivedData = ""
-        self._data = "It was the best of times.\nIt was the worst of times.\n"
+        self._in_buffer = ""
+        self._out_buffer = ""
+        self.communication_dictionary = {}
+
+
 
     ## isOpen()
     # returns True if the port to the Arduino is open.  False otherwise
-    def isOpen( self ):
+    def isOpen(self):
         return self._isOpen
 
     ## open()
     # opens the port
-    def open( self ):
+    def open(self):
         self._isOpen = True
 
     ## close()
     # closes the port
-    def close( self ):
+    def close(self):
         self._isOpen = False
 
     ## write()
     # writes a string of characters to the Arduino
-    def write( self, string ):
-        print( 'Arduino got: "' + string + '"' )
-        self._receivedData += string
+    def write(self, string):
+        debug("input buffer got value: {}".format(string)
+        self._in_buffer += string
 
     ## read()
     # reads n characters from the fake Arduino. Actually n characters
     # are read from the string _data and returned to the caller.
-    def read( self, n=1 ):
-        s = self._data[0:n]
-        self._data = self._data[n:]
-        #print( "read: now self._data = ", self._data )
+    def read(self, N=1):
+        s = self._out_buffer[0:N]
+        self._out_buffer = self._in_buffer[N:]
+        debug( "read: now self._data = ", self._out_buffer)
         return s
 
     ## readline()
     # reads characters from the fake Arduino until a \n is found.
     def readline( self ):
-        returnIndex = self._data.index( "\n" )
+        returnIndex = self._out_buffer.index( "\n" )
         if returnIndex != -1:
-            s = self._data[0:returnIndex+1]
-            self._data = self._data[returnIndex+1:]
+            s = self._out_buffer[0:returnIndex+1]
+            self._out_buffer = self._out_buffer[returnIndex+1:]
             return s
         else:
             return ""
+
+    def in_waiting(self):
+        raise NotImplementedError
+
+    def out_waiting(self):
+        raise NotImplementedError
 
     ## __str__()
     # returns a string representation of the serial class
