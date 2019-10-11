@@ -5,6 +5,10 @@ cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
+env:
+  global:
+  # Doctr deploy key for vstadnytskyi/mock_pyserial
+  - secure: "hgDfvOfYELD/idKQIU8IqWKtgmbROjVSJMKZOFOS8RZAasNCYngUnyqr9N0sOPMbWIYnVNq06qsZ8nGI6VFfqGlmZb6JwoDdPvD8Wk2fMz6aqYb04s2C9bCXwRdhV2Kcg9Tg2/LVgfRZaou2X0rvPpJ2yjBA3ylXZSsIiTh94Eq0spgUMd0/9xr734gZRQPzLyKimIho4RkYMPUggDgDWP7bg456VcG/qel0pjuM4WGajj6PTmc9RSySutXFnvys/xDXqAglhfoygx8iNrd69l6/515jlOiCk4zzdyA9wD+lpUSbsQD53AFTjeG1IIMYWbUhcD2QKEjiN7EHUlcEOda95O55wlvSjXpsQOvgufk1H4+Y05iLohWQ5j6CPkwrMre8NcHWLQSi4PLHplSiF8OCeVGxdnLuzk6aJP3VCDemjCAVwnANzSGCUfjtTEdnDw7tOmMf31bvjIw18B3sCl5qSNme6+mqSGce8moJpN6IhTX+NTuapbtJlmMKQNMX1T4QwdFdzl9ZtUGYD8YQbH8pKNBEMk3o7wys1/BmE2Aiur0zl7+/I1mezoHj41wwHKeERotSPHG2b5tKxPqAQeT8nlMWXiKSFdFPxk9uBkI5vhzq8w8/S069btI0pbp6nE84dpe+ZuXtb0vJhYQwleDnqE0Q9WYpmKSxEejDx08="
 
 install:
   # Install this package and the packages listed in requirements.txt.
