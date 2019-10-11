@@ -13,5 +13,7 @@ The Mock Serial
 
 .. code-block:: python
 
+  ser = Serial()
+
 .. autoclass:: mock_pyserial.Serial
   :members:

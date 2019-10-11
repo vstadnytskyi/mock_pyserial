@@ -16,7 +16,7 @@ class Serial(object):
 
     ## init(): the constructor.  Many of the arguments have default values
     # and can be skipped when calling the constructor.
-    def __init__(self, port='COM1', baudrate = 19200, timeout=1,
+    def __init__(self, port='COM1', baudrate = 115200, timeout=1,
                  bytesize = 8, parity = 'N', stopbits = 1, xonxoff=0,
                  rtscts = 0):
         self.name     = port
@@ -53,6 +53,21 @@ class Serial(object):
     ## write()
     # writes a string of characters to the Arduino
     def write(self, string):
+        """
+        writes input string into input serial buffer
+
+        Parameters
+        ----------
+        string:  (string)
+            command as a string
+
+        Returns
+        -------
+
+        Examples
+        --------
+        >>> ser.write('serial port command')
+        """
         debug("input buffer got value: {}".format(string))
         self._in_buffer += string
 
