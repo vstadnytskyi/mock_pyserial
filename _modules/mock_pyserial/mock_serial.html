@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mock_pyserial.mock_serial &mdash; Mock Pyserial 0.0.0.post4+g78a13a2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Mock Pyserial
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0.post4+g78a13a2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Mock Pyserial</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mock_pyserial.mock_serial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mock_pyserial.mock_serial</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Originally came from http://www.science.smith.edu/dftwiki/index.php/PySerial_Simulator</span>
+<span class="sd"># fakeSerial.py</span>
+<span class="sd"># D. Thiebaut</span>
+<span class="sd"># A very crude simulator for PySerial assuming it</span>
+<span class="sd"># is emulating an Arduino.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">debug</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">warn</span><span class="p">,</span><span class="n">error</span>
+<span class="c1"># a Serial class emulator</span>
+
+<span class="c1">#establishes responses to supported input commands</span>
+<span class="c1">#as {&#39;in command&#39;:&#39;out command&#39;}</span>
+
+
+<div class="viewcode-block" id="Serial"><a class="viewcode-back" href="../../usage.html#mock_pyserial.Serial">[docs]</a><span class="k">class</span> <span class="nc">Serial</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="c1">## init(): the constructor.  Many of the arguments have default values</span>
+    <span class="c1"># and can be skipped when calling the constructor.</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span> <span class="n">baudrate</span> <span class="o">=</span> <span class="mi">115200</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">bytesize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="n">stopbits</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xonxoff</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">rtscts</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>     <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span>     <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>  <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parity</span>   <span class="o">=</span> <span class="n">parity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span> <span class="o">=</span> <span class="n">baudrate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bytesize</span> <span class="o">=</span> <span class="n">bytesize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbits</span> <span class="o">=</span> <span class="n">stopbits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xonxoff</span>  <span class="o">=</span> <span class="n">xonxoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtscts</span>   <span class="o">=</span> <span class="n">rtscts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isOpen</span>  <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_buffer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">communication_dictionary</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+
+    <span class="c1">## isOpen()</span>
+    <span class="c1"># returns True if the port to the Arduino is open.  False otherwise</span>
+    <span class="k">def</span> <span class="nf">isOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isOpen</span>
+
+    <span class="c1">## open()</span>
+    <span class="c1"># opens the port</span>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isOpen</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1">## close()</span>
+    <span class="c1"># closes the port</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_isOpen</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1">## write()</span>
+    <span class="c1"># writes a string of characters to the Arduino</span>
+<div class="viewcode-block" id="Serial.write"><a class="viewcode-back" href="../../usage.html#mock_pyserial.Serial.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        writes input string into input serial buffer</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        string:  (string)</span>
+<span class="sd">            command as a string</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; ser.write(&#39;serial port command&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">debug</span><span class="p">(</span><span class="s2">&quot;input buffer got value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_buffer</span> <span class="o">+=</span> <span class="n">string</span></div>
+
+    <span class="c1">## read()</span>
+    <span class="c1"># reads n characters from the fake Arduino. Actually n characters</span>
+    <span class="c1"># are read from the string _data and returned to the caller.</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_buffer</span><span class="p">[</span><span class="n">N</span><span class="p">:]</span>
+        <span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;read: now self._data = &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="c1">## readline()</span>
+    <span class="c1"># reads characters from the fake Arduino until a \n is found.</span>
+    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="n">returnIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span><span class="o">.</span><span class="n">index</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">returnIndex</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">returnIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_buffer</span><span class="p">[</span><span class="n">returnIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">return</span> <span class="n">s</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">in_waiting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">out_waiting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1">## __str__()</span>
+    <span class="c1"># returns a string representation of the serial class</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span>  <span class="s2">&quot;Serial&lt;id=0xa81c10, open=</span><span class="si">%s</span><span class="s2">&gt;( port=&#39;</span><span class="si">%s</span><span class="s2">&#39;, baudrate=</span><span class="si">%d</span><span class="s2">,&quot;</span> \
+               <span class="o">%</span> <span class="p">(</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isOpen</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span> <span class="p">)</span> \
+               <span class="o">+</span> <span class="s2">&quot; bytesize=</span><span class="si">%d</span><span class="s2">, parity=&#39;</span><span class="si">%s</span><span class="s2">&#39;, stopbits=</span><span class="si">%d</span><span class="s2">, xonxoff=</span><span class="si">%d</span><span class="s2">, rtscts=</span><span class="si">%d</span><span class="s2">)&quot;</span>\
+               <span class="o">%</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytesize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopbits</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xonxoff</span><span class="p">,</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">rtscts</span> <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Valentyn Stadnytskyi
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
